@@ -1,0 +1,14 @@
+[Unit]
+Description=ROSCore
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+EnvironmentFile=/etc/ros-env.conf
+PassEnvironment=ROS_MASTER_URI ROS_IP ROS_HOSTNAME
+ExecStart=/bin/bash -c "source @CMAKE_INSTALL_PREFIX@/setup.bash && roscore"
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

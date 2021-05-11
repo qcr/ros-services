@@ -1,0 +1,7 @@
+#!/bin/bash
+
+systemctl daemon-reload
+
+systemctl enable roscore.service
+systemctl start roscore.service --no-block
+

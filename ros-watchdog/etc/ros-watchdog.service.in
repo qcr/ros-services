@@ -1,0 +1,14 @@
+[Unit]
+Description=ROS Watchdog Daemon
+
+[Service]
+Type=notify
+EnvironmentFile=/etc/ros-env.conf
+PassEnvironment=ROS_MASTER_URI ROS_HOSTNAME ROS_IP
+ExecStart=/usr/bin/ros-watchdog 
+Restart=on-failure
+TimeoutStartSec=infinity
+
+[Install]
+WantedBy=multi-user.target
+

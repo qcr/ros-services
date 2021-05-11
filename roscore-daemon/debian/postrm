@@ -1,0 +1,6 @@
+#!/bin/bash
+
+systemctl stop roscore.service
+systemctl disable roscore.service
+
+systemctl daemon-reload
