@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(roscore-daemon)
+project(ros-omron-agv)
 
 find_package(catkin REQUIRED)
 
@@ -21,9 +21,9 @@ include_directories(
 ## Install ##
 #############
 
-configure_file(etc/roscore.service.in roscore.service)
+configure_file(etc/omron-driver.service.in omron-driver.service)
 
 install(FILES
-  ${CMAKE_BINARY_DIR}/roscore.service
+  ${CMAKE_BINARY_DIR}/omron-driver.service
   DESTINATION /etc/systemd/system/
 )
