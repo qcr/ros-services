@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(roscore-daemon)
+project(roscore_daemon)
 
 find_package(catkin REQUIRED)
 

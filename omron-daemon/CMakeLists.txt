@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(ros-omron-agv)
+project(ros_omron_agv_daemon)
 
 find_package(catkin REQUIRED)
 

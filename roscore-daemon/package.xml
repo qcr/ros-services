@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>roscore-daemon</name>
+  <name>roscore_daemon</name>
   <version>0.2.1</version>
   <description>The roscore-daemon package</description>
 
@@ -50,7 +50,7 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>roslaunch</exec_depend>
-  <exec_depend>ros-env</exec_depend>
+  <exec_depend>ros_env</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(ros-env)
+project(ros_env)
 
 find_package(catkin REQUIRED)
 
