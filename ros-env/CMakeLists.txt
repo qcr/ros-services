@@ -20,5 +20,6 @@ include_directories(
 ## Install ##
 #############
 
-install(DIRECTORY config
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+install(DIRECTORY config/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/config
+)
