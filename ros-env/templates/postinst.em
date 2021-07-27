@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TEMPLATE=@(InstallationPrefix)/share/ros-env/config/ros-env.conf
+TEMPLATE=@(InstallationPrefix)/share/ros_env/config/ros-env.conf
 CUSTOM=/etc/ros-env.conf
 
 if [ -e "$CUSTOM" ]; then
