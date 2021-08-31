@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>rv_panda_daemon</name>
+  <version>0.1.0</version>
+  <description>The rv_panda_daemon package</description>
+
+  <maintainer email="g.suddrey@qut.edu.au">Gavin Suddrey</maintainer>
+
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>ros_watchdog</exec_depend>
+  
+  <export>
+  </export>
+</package>

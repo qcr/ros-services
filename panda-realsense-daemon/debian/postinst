@@ -1,0 +1,7 @@
+#!/bin/bash
+
+systemctl daemon-reload
+
+systemctl enable panda-realsense.service
+systemctl start panda-realsense.service --no-block
+

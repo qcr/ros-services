@@ -1,0 +1,6 @@
+#!/bin/bash
+
+systemctl stop panda-realsense.service
+systemctl disable panda-realsense.service
+
+systemctl daemon-reload

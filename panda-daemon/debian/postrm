@@ -1,0 +1,6 @@
+#!/bin/bash
+
+systemctl stop panda-driver.service
+systemctl disable panda-driver.service
+
+systemctl daemon-reload
