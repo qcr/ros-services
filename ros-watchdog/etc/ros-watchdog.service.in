@@ -6,7 +6,7 @@ Type=notify
 EnvironmentFile=/etc/ros-env.conf
 PassEnvironment=ROS_MASTER_URI ROS_HOSTNAME ROS_IP
 ExecStart=/usr/bin/ros-watchdog 
-Restart=on-failure
+Restart=always
 TimeoutStartSec=infinity
 
 [Install]
