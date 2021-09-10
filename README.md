@@ -1,6 +1,13 @@
-# ROS Daemons
+# ROS Daemons <!-- omit in toc -->
 
 ROS Daemons provide the ability to start certain elements of the ROS ecosystem on boot using the [systemd software suite](https://en.wikipedia.org/wiki/Systemd). This is useful for robots that are required to provide a fixed set of functionality at all times regardless of use-case (e.g., starting up base drivers).
+
+- [Creating a Service](#creating-a-service)
+  - [Service File Template](#service-file-template)
+  - [Post Install Script](#post-install-script)
+  - [Pre Uninstall Script](#pre-uninstall-script)
+- [Building an Executable](#building-an-executable)
+- [Service Dependency Tree](#service-dependency-tree)
 
 ## Creating a Service
 
