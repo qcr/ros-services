@@ -1,7 +1,7 @@
 [Unit]
 Description=ROSCore
-Requires=network-online.target
-After=network-online.target
+Requires=ros.service
+After=ros.service
 
 [Service]
 EnvironmentFile=/etc/ros-env.conf

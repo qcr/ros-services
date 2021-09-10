@@ -50,7 +50,7 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>roslaunch</exec_depend>
-  <exec_depend>ros_env</exec_depend>
+  <exec_depend>ros_daemon</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

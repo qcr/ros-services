@@ -1,5 +1,7 @@
 [Unit]
 Description=ROS Watchdog Daemon
+Requires=ros.service
+After=ros.service
 
 [Service]
 Type=notify

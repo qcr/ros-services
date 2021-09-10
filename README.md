@@ -92,6 +92,40 @@ systemctl daemon-reload
 ## Building an Executable
 Building an executable for your daemon is accomplished through the use of a GitHub action, which is activated whenever a new release is published.
 
+You will need to make sure that your CMakeLists.txt file has the necessary instructions for building and installing a ```{{robot_daemon}}.service``` file from your ```{{robot_daemon}}.service.in``` template file. A simple CMakeLists.txt file can be seen below:
+
+```cmake
+cmake_minimum_required(VERSION 3.0.2)
+project(robot_daemon)
+
+find_package(catkin REQUIRED)
+
+###################################
+## catkin specific configuration ##
+###################################
+
+catkin_package(
+)
+
+###########
+## Build ##
+###########
+
+include_directories(
+)
+
+#############
+## Install ##
+#############
+
+configure_file(etc/{{robot_daemon}}.service.in {{robot_daemon}}.service)
+
+install(FILES
+  ${CMAKE_BINARY_DIR}/{{robot_daemon}}.service
+  DESTINATION /etc/systemd/system/
+)
+```
+
 Please note that you should define a version for your service in the ```package.xml``` file created with your package.
 
 ## Service Dependency Tree
