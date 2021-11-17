@@ -1,6 +1,0 @@
-#!/bin/bash
-
-systemctl stop omron-driver.service
-systemctl disable omron-driver.service
-
-systemctl daemon-reload

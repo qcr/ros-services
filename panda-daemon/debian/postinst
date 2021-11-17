@@ -1,7 +1,0 @@
-#!/bin/bash
-
-systemctl daemon-reload
-
-systemctl enable panda-driver.service
-systemctl start panda-driver.service --no-block
-

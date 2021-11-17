@@ -5,7 +5,7 @@ After=ros.service
 
 [Service]
 Type=notify
-ExecStart=/bin/bash -c "source /etc/qcr/default_config && source $ROS_WORKSPACE && /usr/bin/ros-watchdog"
+ExecStart=/bin/bash -c "source /etc/qcr/qcr-env.bash && source $ROS_WORKSPACE && /usr/bin/ros-watchdog"
 Restart=always
 TimeoutStartSec=infinity
 

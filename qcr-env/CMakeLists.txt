@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(ros_omron_agv_daemon)
+project(qcr_env)
 
 find_package(catkin REQUIRED)
 
@@ -21,9 +21,12 @@ include_directories(
 ## Install ##
 #############
 
-configure_file(etc/omron-driver.service.in omron-driver.service)
+configure_file(
+  etc/qcr-env.bash.in qcr-env.bash
+  @ONLY
+)
 
 install(FILES
-  ${CMAKE_BINARY_DIR}/omron-driver.service
-  DESTINATION /etc/systemd/system/
+  ${PROJECT_BINARY_DIR}/qcr-env.bash
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/etc/
 )

@@ -21,9 +21,7 @@ include_directories(
 ## Install ##
 #############
 
-configure_file(etc/roscore.service.in roscore.service)
-
 install(FILES
-  ${CMAKE_BINARY_DIR}/roscore.service
+  etc/roscore.service
   DESTINATION /etc/systemd/system/
 )

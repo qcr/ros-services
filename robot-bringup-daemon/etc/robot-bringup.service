@@ -1,0 +1,12 @@
+[Unit]
+Description=Robot Bringup Service
+Requires=ros-watchdog.service
+After=ros-watchdog.service
+
+[Service]
+ExecStart=/bin/bash -c "source /etc/qcr/qcr-env.bash && source $ROS_WORKSPACE && bash -c '$QCR_ROBOT_LAUNCH'"
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=ros-watchdog.service
