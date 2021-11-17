@@ -22,6 +22,6 @@ include_directories(
 #############
 
 install(FILES
-  etc/roscore.service
+  etc/robot-bringup.service
   DESTINATION /etc/systemd/system/
 )

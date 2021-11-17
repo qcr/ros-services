@@ -22,6 +22,6 @@ include_directories(
 #############
 
 install(FILES
-  ${CMAKE_BINARY_DIR}/ros.service
+  etc/ros.service
   DESTINATION /etc/systemd/system/
 )
