@@ -3,11 +3,11 @@
 ROS Daemons provide the ability to start certain elements of the ROS ecosystem on boot using the [systemd software suite](https://en.wikipedia.org/wiki/Systemd). This is useful for robots that are required to provide a fixed set of functionality at all times regardless of use-case (e.g., starting up base drivers).
 
 - [Contents](#contents)
-  - [1. qcr-env](#1-qcr-env)
-  - [2. ros-daemon](#2-ros-daemon)
-  - [3. roscore-daemon](#3-roscore-daemon)
-  - [4. ros-watchdog](#4-ros-watchdog)
-  - [5. robot-bringup-daemon](#5-robot-bringup-daemon)
+  - [qcr-env](#qcr-env)
+  - [ros-daemon](#ros-daemon)
+  - [roscore-daemon](#roscore-daemon)
+  - [ros-watchdog](#ros-watchdog)
+  - [robot-bringup-daemon](#robot-bringup-daemon)
 - [Installation](#installation)
   - [Step 1. Adding QCR Apt Repositories](#step-1-adding-qcr-apt-repositories)
   - [Step 2. Installing the Daemons](#step-2-installing-the-daemons)
@@ -22,23 +22,23 @@ ROS Daemons provide the ability to start certain elements of the ROS ecosystem o
 
 This repository is divided into the following five packages:
 
-### 1. qcr-env
+### qcr-env
 
 The qcr-env package installs the ```qcr-env.bash``` file to ```/etc/qcr/```. This file defines system critical information such as the location of the primary ROS workspace, ROS master location and the launch command that should be exected by the robot-bringup daemon.
 
 *Note*: This file can be optionally sourced within your ```~/.bashrc``` to provide access to robot state information.
 
-### 2. ros-daemon
+### ros-daemon
 
 The ros-daemon package installs the ```ros``` daemon. The ROS daemons is a meta-service that when started brings up the rest of the daemons provided by this repository, and conversely, when stopped will shutdown these same daemons. It should be noted that this package does not execute any ROS software itself.
 
-### 3. roscore-daemon
+### roscore-daemon
 
 The roscore-daemon package installs the ```roscore``` daemon. This daemons creates a ROS master by executing the ```roscore``` command on startup - using the system variables defined in ```/etc/qcr/qcr-env.bash```.
 
 *Note*: This service is optional and can be omitted on systems which are not intended to act as the ROS master.
 
-### 4. ros-watchdog
+### ros-watchdog
 
 The ros-watchdog packages installs the ```ros-watchdog``` daemon. This daemon is responsible for ensuring that the ROS master specified in ```/etc/qcr/qcr-env.bash``` is alive and managing the life-cycle of its dependent services accordingly. 
 
@@ -46,7 +46,7 @@ In the event that it is unable to contact the ROS master it initiates a restart 
 
 *Note*: This service can be located on a different machine to the ROS master, facilitating multi-machine management of services.
 
-### 5. robot-bringup-daemon
+### robot-bringup-daemon
 
 THe robot-bringup-daemon package installs the ```robot-bringup``` daemon. This daemon executes the command specified by the ```QCR_ROBOT_LAUNCH``` variable in ```/etc/qcr/env.bash``` - allowing custom commands such as roslaunch to be initiated at boot.
 
