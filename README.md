@@ -80,13 +80,6 @@ Install the roscore-daemon (optional) and robot-bringup-daemon
 sudo apt install -y ros-noetic-roscore-daemon ros-noetic-robot-bringup-daemon
 ```
 
-
-All services in this repository are catkinised to simplify the build and distribution process. To create a new ROS Daemon package within this repository, simply execute the command:
-
-```sh
-catkin_create_pkg {{robot_daemon}}
-```
-
 ## Usage
 
 ### Starting/Stopping the Daemons
