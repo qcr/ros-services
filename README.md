@@ -2,14 +2,84 @@
 
 ROS Daemons provide the ability to start certain elements of the ROS ecosystem on boot using the [systemd software suite](https://en.wikipedia.org/wiki/Systemd). This is useful for robots that are required to provide a fixed set of functionality at all times regardless of use-case (e.g., starting up base drivers).
 
-- [Creating a Service](#creating-a-service)
-  - [Service File Template](#service-file-template)
-  - [Post Install Script](#post-install-script)
-  - [Pre Uninstall Script](#pre-uninstall-script)
-- [Building an Executable](#building-an-executable)
+- [Contents](#contents)
+  - [1. qcr-env](#1-qcr-env)
+  - [2. ros-daemon](#2-ros-daemon)
+  - [3. roscore-daemon](#3-roscore-daemon)
+  - [4. ros-watchdog](#4-ros-watchdog)
+  - [5. robot-bringup-daemon](#5-robot-bringup-daemon)
+- [Installation](#installation)
+  - [Step 1. Adding QCR Apt Repositories](#step-1-adding-qcr-apt-repositories)
+  - [Step 2. Installing the Daemons](#step-2-installing-the-daemons)
+- [Usage](#usage)
+  - [Starting/Stopping the Daemons](#startingstopping-the-daemons)
+  - [Accessing Logs](#accessing-logs)
+  - [Setting up Robot Bringup](#setting-up-robot-bringup)
+- [Usage on a Development Machine](#usage-on-a-development-machine)
 - [Service Dependency Tree](#service-dependency-tree)
 
-## Creating a Service
+## Contents
+
+This repository is divided into the following five packages:
+
+### 1. qcr-env
+
+The qcr-env package installs the ```qcr-env.bash``` file to ```/etc/qcr/```. This file defines system critical information such as the location of the primary ROS workspace, ROS master location and the launch command that should be exected by the robot-bringup daemon.
+
+*Note*: This file can be optionally sourced within your ```~/.bashrc``` to provide access to robot state information.
+
+### 2. ros-daemon
+
+The ros-daemon package installs the ```ros``` daemon. The ROS daemons is a meta-service that when started brings up the rest of the daemons provided by this repository, and conversely, when stopped will shutdown these same daemons. It should be noted that this package does not execute any ROS software itself.
+
+### 3. roscore-daemon
+
+The roscore-daemon package installs the ```roscore``` daemon. This daemons creates a ROS master by executing the ```roscore``` command on startup - using the system variables defined in ```/etc/qcr/qcr-env.bash```.
+
+*Note*: This service is optional and can be omitted on systems which are not intended to act as the ROS master.
+
+### 4. ros-watchdog
+
+The ros-watchdog packages installs the ```ros-watchdog``` daemon. This daemon is responsible for ensuring that the ROS master specified in ```/etc/qcr/qcr-env.bash``` is alive and managing the life-cycle of its dependent services accordingly. 
+
+In the event that it is unable to contact the ROS master it initiates a restart - causing all depedent services to stop. Until the ROS master is contactable, the ros-watchdog daemon will remain in an *activating* state, preventing its dependent services from restarting. Once the ROS master becomes contactable again however, the ros-watchdog will transition into an *activated* state, and its dependent services will restart.
+
+*Note*: This service can be located on a different machine to the ROS master, facilitating multi-machine management of services.
+
+### 5. robot-bringup-daemon
+
+THe robot-bringup-daemon package installs the ```robot-bringup``` daemon. This daemon executes the command specified by the ```QCR_ROBOT_LAUNCH``` variable in ```/etc/qcr/env.bash``` - allowing custom commands such as roslaunch to be initiated at boot.
+
+## Installation
+
+Installation of these packages is intended to be done through the APT package manager.
+
+### Step 1. Adding QCR Apt Repositories
+Import the GPG Key using the following command
+
+```sh
+sudo -E apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv-key 5B76C9B0
+```
+
+Add the Robotic Vision repository to the apt sources list directory
+
+```sh
+sudo sh -c 'echo "deb [arch=$(dpkg --print-architecture)] https://packages.qcr.ai $(lsb_release -sc) main" > /etc/apt/sources.list.d/qcr-latest.list'
+```
+
+Update your packages list
+
+```sh
+sudo apt update
+```
+
+### Step 2. Installing the Daemons
+
+Install the roscore-daemon (optional) and robot-bringup-daemon
+```
+sudo apt install -y ros-noetic-roscore-daemon ros-noetic-robot-bringup-daemon
+```
+
 
 All services in this repository are catkinised to simplify the build and distribution process. To create a new ROS Daemon package within this repository, simply execute the command:
 
@@ -17,120 +87,50 @@ All services in this repository are catkinised to simplify the build and distrib
 catkin_create_pkg {{robot_daemon}}
 ```
 
-where ```{{robot_daemon}}``` is the name you wish to give the service.
+## Usage
 
-All packages must include the same general set of files, which are:
-
-```
-{{robot_daemon}}
-    - debian
-      - postinst
-      - prerm
-    - etc
-     - {{robot_daemon}}.service.in
-```
-
-where:
-
-- ```{{robot_daemon}}.service.in``` is a template file from which the service file is generated. The variables in the template file will be determined by the linux and ROS distributions on the system.
-- ```postinst``` is a script that registers and starts the service when the package is distributed as a debian.
-- ```prerm``` is a script that stops and unregisters the service prior to uninstalling the debian package
-
-### Service File Template
-
-The general structure of the ```{{robot_daemon}}.service.in``` template file is as follows:
-
-```
-[Unit]
-Description=[SERVICE DESCRIPTION]
-Requires=ros-watchdog.service
-After=ros-watchdog.service
-
-[Service]
-EnvironmentFile=/etc/ros-env.conf
-PassEnvironment=ROS_MASTER_URI ROS_IP ROS_HOSTNAME
-ExecStart=/bin/bash -c "source @CMAKE_INSTALL_PREFIX@/setup.bash && roslaunch [ROS PACKAGE] [ROSLAUNCH FILE].launch"
-Restart=always
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-```
-
-where [SERVICE DESCRIPTION], [ROS PACKAGE] and [ROSLAUNCH FILE] should be replaced.
-
-For an explanation of the ```ros-watchdog.service```, see the section on the Service Dependency Tree at the end of this README.
-
-### Post Install Script
-
-The ```postinst``` script is generally very simple, with the following format:
+### Starting/Stopping the Daemons
+Managing the state of the daemons in this package can be accomplished through the use of either the ```service``` or ```systemctl``` commands:
 
 ```sh
-#!/bin/bash
-
-systemctl daemon-reload
-
-systemctl enable {{robot_daemon}}.service
-systemctl start {{robot_daemon}}.service # use --no-block to stop apt from waiting for this service to start
+sudo service {{daemon name}} [start|stop|restart|status]
+#OR
+sudo systemctl [start|stop|restart|status] {{daemon name}}
 ```
 
-Where ```{{robot_daemon}}.service``` is the same name as your ```{{robot_daemon}}.service.in``` file minus the file ```.in``` extension.
+Where ```{{daemon name}}``` is the name of the daemon you wish to manage (i.e., ros, roscore, ros-watchdog, robot-bringup).
 
-### Pre Uninstall Script
+### Accessing Logs
+Accessing stdout logs from each of the daemons can be accomplished using the ```journalctl``` command:
 
-The ```prerm``` script is likewise very simple:
-
-```
-#!/bin/bash
-
-systemctl stop {{robot_daemon}}.service
-systemctl disable {{robot_daemon}}.service
-
-systemctl daemon-reload
+```sh
+journalctl -u {{daemon name}} --follow --lines 500
 ```
 
-## Building an Executable
-Building an executable for your daemon is accomplished through the use of a GitHub action, which is activated whenever a new release is published.
+Where ```{{daemon name}}``` is the name of the daemon you wish to manage (i.e., ros, roscore, ros-watchdog, robot-bringup).
 
-You will need to make sure that your CMakeLists.txt file has the necessary instructions for building and installing a ```{{robot_daemon}}.service``` file from your ```{{robot_daemon}}.service.in``` template file. A simple CMakeLists.txt file can be seen below:
+### Setting up Robot Bringup
 
-```cmake
-cmake_minimum_required(VERSION 3.0.2)
-project(robot_daemon)
+The command executed by the ```robot-bringup``` daemon is defined by the ```QCR_ROBOT_LAUNCH``` variable in ```/etc/qcr/qcr-env.bash```. An example of how to use this variable can be seen below:
 
-find_package(catkin REQUIRED)
-
-###################################
-## catkin specific configuration ##
-###################################
-
-catkin_package(
-)
-
-###########
-## Build ##
-###########
-
-include_directories(
-)
-
-#############
-## Install ##
-#############
-
-configure_file(etc/{{robot_daemon}}.service.in {{robot_daemon}}.service)
-
-install(FILES
-  ${CMAKE_BINARY_DIR}/{{robot_daemon}}.service
-  DESTINATION /etc/systemd/system/
-)
+```
+export QCR_ROBOT_LAUNCH="roslaunch joy_teleop example.launch"
 ```
 
-Please note that you should define a version for your service in the ```package.xml``` file created with your package.
+**Important:** The robot-bringup daemon must be restarted after making changes to the ```QCR_ROBOT_LAUNCH``` variable using the command 
+
+```sh
+sudo service robot-bringup restart
+```
+
+## Usage on a Development Machine
+The ```/etc/qcr/qcr-env.bash``` file installed by the qcr-env package is copied from a template file that is located in the system install lcation for ROS (e.g., /opt/ros/noetic/share/qcr_env/). This file is only copied if ```/etc/qcr/qcr-env.bash``` does not already exists.
+
+This allows local changes to be preserved when the package is upgraded, and additionally, allows local changes to be tracked after installation using the [QCR robot_system_config tools](https://github.com/qcr/robot_system_configs).
 
 ## Service Dependency Tree
 
-To allow for multi-machine configurations, and to provide a simplified mechanism for shutting down the complete set of services, we define a dependency tree, (seen in the image below). For instance, stopping the *ros* service on Machine 1 using the command ```sudo service ros stop``` will cause the *ros-watchdog* and *roscore* services to stop, which will then cause the *robot-service1* and *robot-service2* services to stop.
+To allow for multi-machine configurations, and to provide a simplified mechanism for shutting down the complete set of services, we define a dependency tree, (seen in the image below) that facilitates the ability to manage the robot state at varying levels. For instance, by stopping the *ros* service on Machine 1 using the command ```sudo service ros stop``` the *ros-watchdog* and *roscore* services, which depend on the *ros* service will stop which will in turn cause the *robot-service1* and *robot-service2* services to stop.
 
 ![Service Dependency Tree](services.png)
 

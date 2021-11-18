@@ -8,18 +8,20 @@ export QCR_ROBOT_CONF_PATH="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /d
 export QCR_ROBOT_TYPE=
 # Sets this robot to be a ROS MASTER (true) or a USER PC (false)
 export QCR_IS_MASTER=true
-# Sets the default location from which to source ROS packages
-export ROS_WORKSPACE=@CMAKE_INSTALL_PREFIX@/setup.bash
 
 # --------- ROS Related --------------
 if $QCR_IS_MASTER; then
-    # --- eth0 static IP (for interfacing to another PC)
     export ROS_MASTER_URI=http://$(hostname):11311
 else
     export ROS_MASTER_URI=http://user-pc:11311
 fi
 
-export QCR_ROBOT_LAUNCH=
+# Sets the default location from which to source ROS packages
+export ROS_WORKSPACE=@CMAKE_INSTALL_PREFIX@/setup.bash
+
+# --------- Bringup Related --------------
+# The command that used by the bringup service to launch the robot stack
+export QCR_ROBOT_LAUNCH=""
 
 # --------- System Related -----------
 export NETWORK_CONFIG_DIR=/etc/systemd/network
