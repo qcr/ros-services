@@ -80,6 +80,8 @@ Install the roscore-daemon (optional) and robot-bringup-daemon
 sudo apt install -y ros-noetic-roscore-daemon ros-noetic-robot-bringup-daemon
 ```
 
+*Note*: As part of the installation process, the daemons will automatically startup and register themselves to start on boot.
+
 ## Usage
 
 ### Starting/Stopping the Daemons
