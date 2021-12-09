@@ -20,8 +20,14 @@ fi
 export ROS_WORKSPACE=@CMAKE_INSTALL_PREFIX@/setup.bash
 
 # --------- Bringup Related --------------
+# The command to run before bringing up the robot service
+export QCR_ROBOT_PRELAUNCH=
+
 # The command that used by the bringup service to launch the robot stack
-export QCR_ROBOT_LAUNCH=""
+export QCR_ROBOT_LAUNCH=
+
+# The command to run when the bringup service exits
+export QCR_ROBOT_POSTEXIT=
 
 # --------- System Related -----------
 export NETWORK_CONFIG_DIR=/etc/systemd/network
