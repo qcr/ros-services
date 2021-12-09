@@ -4,7 +4,9 @@ Requires=ros-watchdog.service
 After=ros-watchdog.service
 
 [Service]
+ExecStartPre=/bin/bash -c "source /etc/qcr/qcr-env.bash && source $ROS_WORKSPACE && bash -c '$QCR_ROBOT_PRELAUNCH'"
 ExecStart=/bin/bash -c "source /etc/qcr/qcr-env.bash && source $ROS_WORKSPACE && bash -c '$QCR_ROBOT_LAUNCH'"
+ExecStop==/bin/bash -c "source /etc/qcr/qcr-env.bash && source $ROS_WORKSPACE && bash -c '$QCR_ROBOT_POSTEXIT'"
 Restart=always
 RestartSec=5
 
