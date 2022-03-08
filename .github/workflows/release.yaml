@@ -58,6 +58,7 @@ jobs:
       - name : Notify QCR
         uses: suddrey-qut/invoke-qcr-hook@master
         with:
+          release: ${{ steps.build.outputs.release }}
           ref: ${{ github.ref }}
           repo: ${{ github.repository }}
           files: ${{ steps.upload.outputs.browser_download_urls }}
