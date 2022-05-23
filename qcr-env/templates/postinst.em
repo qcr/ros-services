@@ -15,3 +15,4 @@ fi
 
 echo 'Copying qcr-env.bash to QCR configuration directory /etc/qcr...'
 cp $TEMPLATE $CUSTOM;
+chmod 0664 $CUSTOM
