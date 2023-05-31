@@ -8,6 +8,9 @@ ROS Daemons provide the ability to start certain elements of the ROS ecosystem o
   - [roscore-daemon](#roscore-daemon)
   - [ros-watchdog](#ros-watchdog)
   - [robot-bringup-daemon](#robot-bringup-daemon)
+  - [ros-sensors](#ros-sensors-daemon)
+  - [ros-robot](#ros-robot)
+  - [ros-project](#ros-project)
 - [Installation](#installation)
   - [Step 1. Adding QCR Apt Repositories](#step-1-adding-qcr-apt-repositories)
   - [Step 2. Installing the Daemons](#step-2-installing-the-daemons)
@@ -48,7 +51,23 @@ In the event that it is unable to contact the ROS master it initiates a restart 
 
 ### robot-bringup-daemon
 
-THe robot-bringup-daemon package installs the ```robot-bringup``` daemon. This daemon executes the command specified by the ```QCR_ROBOT_LAUNCH``` variable in ```/etc/qcr/env.bash``` - allowing custom commands such as roslaunch to be initiated at boot.
+The robot-bringup-daemon package installs the ```robot-bringup``` daemon. This daemon executes the command specified by the ```QCR_ROBOT_LAUNCH``` variable in ```/etc/qcr/env.bash``` - allowing custom commands such as roslaunch to be initiated at boot.
+
+*Note*: this daemon/service is considered legacy and has been superseded by the ros-sensors, ros-robot, and ros-project meta services in combination with the [QCR Services Tool](https://github.com/qcr/services).
+
+### ros-sensors
+
+The ros-sensors-daemon package installs the ```ros-senors``` daemon. The ROS-Sensors daemons is a meta-service that when started brings up any dependent services, and conversely, when stopped will shutdown these same daemons. This meta-service is meant to be used as the dependent service for all sensors that should be launched on boot.
+
+### ros-robot
+
+The ros-robot-daemon package installs the ```ros-robot``` daemon. The ROS-Robot daemons is a meta-service that when started brings up any dependent services, and conversely, when stopped will shutdown these same daemons. This meta-service is meant to be used as the dependent service for all components that should be launched on boot required by the robot (e.g., teleoperation node, hardware interface nodes, etc.).
+
+### ros-project
+
+The ros-project-daemon package installs the ```ros-project``` daemon. The ROS-Project daemons is a meta-service that when started brings up any dependent services, and conversely, when stopped will shutdown these same daemons. This meta-service is meant to be used as the dependent service for all components that should be launched on boot for your specific project (e.g., nodes containing research algorithms).
+
+
 
 ## Installation
 
