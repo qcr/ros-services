@@ -1,0 +1,6 @@
+#!/bin/bash
+
+systemctl stop ros-sensors.service
+systemctl disable ros-sensors.service
+
+systemctl daemon-reload

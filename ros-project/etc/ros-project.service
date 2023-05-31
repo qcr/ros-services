@@ -1,0 +1,13 @@
+[Unit]
+Description=ROS Project Service Hook
+Requires=ros-watchdog.service
+After=ros-watchdog.service
+
+[Service]
+ExecStart=/bin/bash -c "echo Started ROS Project Service Hook"
+RemainAfterExit=true
+Restart=always
+
+[Install]
+WantedBy=ros-watchdog.service
+

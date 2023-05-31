@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>robot_bringup_daemon</name>
-  <version>0.2.8</version>
+  <version>0.3.0</version>
   <description>The robot_bringup_daemon package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ros_daemon</name>
+  <name>ros_project</name>
   <version>0.3.0</version>
-  <description>The ros_daemon package</description>
+  <description>The ros_project package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
