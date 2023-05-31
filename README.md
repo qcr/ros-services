@@ -8,7 +8,7 @@ ROS Daemons provide the ability to start certain elements of the ROS ecosystem o
   - [roscore-daemon](#roscore-daemon)
   - [ros-watchdog](#ros-watchdog)
   - [robot-bringup-daemon](#robot-bringup-daemon)
-  - [ros-sensors](#ros-sensor)
+  - [ros-sensors](#ros-sensors)
   - [ros-robot](#ros-robot)
   - [ros-project](#ros-project)
 - [Service Dependency Tree](#service-dependency-tree)
