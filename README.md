@@ -2,7 +2,7 @@
 
 ROS Daemons provide the ability to start certain elements of the ROS ecosystem on boot using the [systemd software suite](https://en.wikipedia.org/wiki/Systemd). This is useful for robots that are required to provide a fixed set of functionality at all times regardless of use-case (e.g., starting up base drivers).
 
-- [Contents](#contents)
+- [Daemons](#daemons)
   - [qcr-env](#qcr-env)
   - [ros-daemon](#ros-daemon)
   - [roscore-daemon](#roscore-daemon)
@@ -11,6 +11,7 @@ ROS Daemons provide the ability to start certain elements of the ROS ecosystem o
   - [ros-sensors](#ros-sensors-daemon)
   - [ros-robot](#ros-robot)
   - [ros-project](#ros-project)
+- [Service Dependency Tree](#service-dependency-tree)
 - [Installation](#installation)
   - [Step 1. Adding QCR Apt Repositories](#step-1-adding-qcr-apt-repositories)
   - [Step 2. Installing the Daemons](#step-2-installing-the-daemons)
@@ -19,9 +20,8 @@ ROS Daemons provide the ability to start certain elements of the ROS ecosystem o
   - [Accessing Logs](#accessing-logs)
   - [Setting up Robot Bringup](#setting-up-robot-bringup)
 - [Usage on a Development Machine](#usage-on-a-development-machine)
-- [Service Dependency Tree](#service-dependency-tree)
 
-## Contents
+## Daemons
 
 This repository is divided into the following five packages:
 
@@ -53,7 +53,7 @@ In the event that it is unable to contact the ROS master it initiates a restart 
 
 The robot-bringup-daemon package installs the ```robot-bringup``` daemon. This daemon executes the command specified by the ```QCR_ROBOT_LAUNCH``` variable in ```/etc/qcr/env.bash``` - allowing custom commands such as roslaunch to be initiated at boot.
 
-*Note*: this daemon/service is considered legacy and has been superseded by the ros-sensors, ros-robot, and ros-project meta services in combination with the [QCR Services Tool](https://github.com/qcr/services).
+*Note*: this daemon/service is considered legacy and has been superseded by the ros-sensors, ros-robot, and ros-project meta services.
 
 ### ros-sensors
 
@@ -67,7 +67,15 @@ The ros-robot-daemon package installs the ```ros-robot``` daemon. The ROS-Robot 
 
 The ros-project-daemon package installs the ```ros-project``` daemon. The ROS-Project daemons is a meta-service that when started brings up any dependent services, and conversely, when stopped will shutdown these same daemons. This meta-service is meant to be used as the dependent service for all components that should be launched on boot for your specific project (e.g., nodes containing research algorithms).
 
+## Service Dependency Tree
 
+To allow for multi-machine configurations, and to provide a simplified mechanism for shutting down the complete set of services, we define a dependency tree, (seen in the image below) that facilitates the ability to manage the robot state at varying levels. For instance, by stopping the *ros* service on Machine 1 using the command ```sudo service ros stop``` the *ros-watchdog* and *roscore* services, which depend on the *ros* service will stop which will in turn cause all depedent services to stop.
+
+![Service Dependency Tree](services.png)
+
+Note that the *ros-watchdog* service has a soft dependency on the *roscore* service (indicated by the dashed line). When the *ros-watchdog* service is started, it will enter an initial *starting* state, which prevents any of its dependent services from starting. When it detects the ROS master has started, which it does by polling the ROS master at a frequency of 1hz, it will enter a *started* state, allowing its dependent services to start. In the event that the ROS master does not respond (due to being stopped), the ros-watchdog will go through a restart procedure, which will cause its dependent services to stop, before entering back into its *starting* state and waiting for the ROS Master to come back online.
+
+This design allows us to create services that depend on a ROS Master that may be running on a different machine, a capability that is not provided by regular systemd dependencies.
 
 ## Installation
 
@@ -125,6 +133,8 @@ Where ```{{daemon name}}``` is the name of the daemon you wish to manage (i.e., 
 
 ### Setting up Robot Bringup
 
+*Note*: the Robot Bringup service is considered legacy and has been superseded by the ros-sensors, ros-robot, and ros-project meta services.
+
 The command executed by the ```robot-bringup``` daemon is defined by the ```QCR_ROBOT_LAUNCH``` variable in ```/etc/qcr/qcr-env.bash```. An example of how to use this variable can be seen below:
 
 ```
@@ -141,14 +151,4 @@ sudo service robot-bringup restart
 The ```/etc/qcr/qcr-env.bash``` file installed by the qcr-env package is copied from a template file that is located in the system install lcation for ROS (e.g., /opt/ros/noetic/share/qcr_env/). This file is only copied if ```/etc/qcr/qcr-env.bash``` does not already exists.
 
 This allows local changes to be preserved when the package is upgraded, and additionally, allows local changes to be tracked after installation using the [QCR robot_system_config tools](https://github.com/qcr/robot_system_configs).
-
-## Service Dependency Tree
-
-To allow for multi-machine configurations, and to provide a simplified mechanism for shutting down the complete set of services, we define a dependency tree, (seen in the image below) that facilitates the ability to manage the robot state at varying levels. For instance, by stopping the *ros* service on Machine 1 using the command ```sudo service ros stop``` the *ros-watchdog* and *roscore* services, which depend on the *ros* service will stop which will in turn cause the *robot-service1* and *robot-service2* services to stop.
-
-![Service Dependency Tree](services.png)
-
-Note that the *ros-watchdog* service has a soft dependency on the *roscore* service (indicated by the dashed line). When the *ros-watchdog* service is started, it will enter an initial *starting* state, which prevents any of its dependent services from starting. When it detects the ROS master has started, which it does by polling the ROS master at a frequency of 1hz, it will enter a *started* state, allowing its dependent services to start. In the event that the ROS master does not respond (due to being stopped), the ros-watchdog will go through a restart procedure, which will cause its dependent services to stop, before entering back into its *starting* state and waiting for the ROS Master to come back online.
-
-This design allows us to create services that depend on a ROS Master that may be running on a different machine, a capability that is not provided by regular systemd dependencies
 
