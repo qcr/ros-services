@@ -1,0 +1,6 @@
+#!/bin/bash
+
+systemctl stop ros-project.service
+systemctl disable ros-project.service
+
+systemctl daemon-reload
