@@ -27,19 +27,25 @@ This repository is divided into the following five packages:
 
 ### qcr-env
 
-The qcr-env package installs the ```qcr-env.bash``` file to ```/etc/qcr/```. This file defines system critical information such as the location of the primary ROS workspace, ROS master location and the launch command that should be exected by the robot-bringup daemon.
+The qcr-env package installs the ```qcr-env.bash``` file to ```/etc/qcr/```. This file defines system critical information such as the location of the primary ROS workspace, and ROS master location. These variables are utilised by the various services below. For example, the roscore-daemon relies on having the ROS workspace sourced in order to start a roscore.
 
 *Note*: This file can be optionally sourced within your ```~/.bashrc``` to provide access to robot state information.
+
+*Install*: `sudo apt install ros-noetic-qcr-env` (requires GPG Key to be set, see [below](#installation))
 
 ### ros-daemon
 
 The ros-daemon package installs the ```ros``` daemon. The ROS daemons is a meta-service that when started brings up the rest of the daemons provided by this repository, and conversely, when stopped will shutdown these same daemons. It should be noted that this package does not execute any ROS software itself.
+
+*Install*: `sudo apt install ros-noetic-ros-daemon` (requires GPG Key to be set, see [below](#installation))
 
 ### roscore-daemon
 
 The roscore-daemon package installs the ```roscore``` daemon. This daemons creates a ROS master by executing the ```roscore``` command on startup - using the system variables defined in ```/etc/qcr/qcr-env.bash```.
 
 *Note*: This service is optional and can be omitted on systems which are not intended to act as the ROS master.
+
+*Install*: `sudo apt install ros-noetic-roscore-daemon` (requires GPG Key to be set, see [below](#installation))
 
 ### ros-watchdog
 
@@ -49,23 +55,33 @@ In the event that it is unable to contact the ROS master it initiates a restart 
 
 *Note*: This service can be located on a different machine to the ROS master, facilitating multi-machine management of services.
 
+*Install*: `sudo apt install ros-noetic-ros-watchdog` (requires GPG Key to be set, see [below](#installation))
+
 ### robot-bringup-daemon
 
 The robot-bringup-daemon package installs the ```robot-bringup``` daemon. This daemon executes the command specified by the ```QCR_ROBOT_LAUNCH``` variable in ```/etc/qcr/env.bash``` - allowing custom commands such as roslaunch to be initiated at boot.
 
 *Note*: this daemon/service is considered legacy and has been superseded by the ros-sensors, ros-robot, and ros-project meta services.
 
+*Install*: `sudo apt install ros-noetic-robot-bringup-daemon` (requires GPG Key to be set, see [below](#installation))
+
 ### ros-sensors
 
 The ros-sensors-daemon package installs the ```ros-senors``` daemon. The ROS-Sensors daemons is a meta-service that when started brings up any dependent services, and conversely, when stopped will shutdown these same daemons. This meta-service is meant to be used as the dependent service for all sensors that should be launched on boot.
+
+*Install*: `sudo apt install ros-noetic-ros-sensors` (requires GPG Key to be set, see [below](#installation))
 
 ### ros-robot
 
 The ros-robot-daemon package installs the ```ros-robot``` daemon. The ROS-Robot daemons is a meta-service that when started brings up any dependent services, and conversely, when stopped will shutdown these same daemons. This meta-service is meant to be used as the dependent service for all components that should be launched on boot required by the robot (e.g., teleoperation node, hardware interface nodes, etc.).
 
+*Install*: `sudo apt install ros-noetic-ros-robot` (requires GPG Key to be set, see [below](#installation))
+
 ### ros-project
 
 The ros-project-daemon package installs the ```ros-project``` daemon. The ROS-Project daemons is a meta-service that when started brings up any dependent services, and conversely, when stopped will shutdown these same daemons. This meta-service is meant to be used as the dependent service for all components that should be launched on boot for your specific project (e.g., nodes containing research algorithms).
+
+*Install*: `sudo apt install ros-noetic-ros-project` (requires GPG Key to be set, see [below](#installation))
 
 ## Service Dependency Tree
 

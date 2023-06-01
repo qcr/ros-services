@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>ros_sensors</name>
-  <version>0.3.0</version>
+  <version>0.3.2</version>
   <description>The ros_sensors package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
@@ -14,6 +14,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>qcr_env</exec_depend>
+  <exec_depend>ros_watchdog</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
