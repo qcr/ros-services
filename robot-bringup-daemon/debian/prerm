@@ -1,6 +1,0 @@
-#!/bin/bash
-
-systemctl stop robot-bringup.service
-systemctl disable robot-bringup.service
-
-systemctl daemon-reload

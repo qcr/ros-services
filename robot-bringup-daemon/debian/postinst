@@ -1,7 +1,0 @@
-#!/bin/bash
-
-systemctl daemon-reload
-
-systemctl enable robot-bringup.service
-systemctl start robot-bringup.service --no-block
-

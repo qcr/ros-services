@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(roscore_daemon)
+project(qcr_services)
 
 find_package(catkin REQUIRED)
 
@@ -22,6 +22,11 @@ include_directories(
 #############
 
 install(FILES
+  etc/ros.service
+  etc/ros-watchdog.service
   etc/roscore.service
+  etc/ros-sensors.service
+  etc/ros-robot.service
+  etc/ros-project.service
   DESTINATION /etc/systemd/system/
 )

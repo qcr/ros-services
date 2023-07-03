@@ -1,0 +1,21 @@
+#!/bin/bash
+
+systemctl stop ros-project.service
+systemctl disable ros-project.service
+
+systemctl stop ros-robot.service
+systemctl disable ros-robot.service
+
+systemctl stop ros-sensors.service
+systemctl disable ros-sensors.service
+
+systemctl stop roscore.service
+systemctl disable roscore.service
+
+systemctl stop ros-watchdog.service
+systemctl disable ros-watchdog.service
+
+systemctl stop ros.service
+systemctl disable ros.service
+
+systemctl daemon-reload

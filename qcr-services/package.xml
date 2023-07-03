@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>robot_bringup_daemon</name>
-  <version>0.3.2</version>
-  <description>The robot_bringup_daemon package</description>
+  <name>qcr_services</name>
+  <version>0.1.0</version>
+  <description>The qcr_services package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -49,8 +49,8 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>roslaunch</exec_depend>
   <exec_depend>qcr_env</exec_depend>
-  <exec_depend>ros_watchdog</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

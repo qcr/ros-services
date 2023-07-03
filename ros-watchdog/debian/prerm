@@ -1,6 +1,0 @@
-#!/bin/bash
-
-systemctl stop ros-watchdog.service
-systemctl disable ros-watchdog.service
-
-systemctl daemon-reload

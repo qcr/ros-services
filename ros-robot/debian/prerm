@@ -1,6 +1,0 @@
-#!/bin/bash
-
-systemctl stop ros-robot.service
-systemctl disable ros-robot.service
-
-systemctl daemon-reload

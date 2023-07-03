@@ -1,6 +1,0 @@
-#!/bin/bash
-
-systemctl daemon-reload
-
-systemctl enable ros-watchdog.service
-systemctl start ros-watchdog.service --no-block

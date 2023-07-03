@@ -1,31 +1,20 @@
-# ROS Daemons <!-- omit in toc -->
+# QCR ROS Services <!-- omit in toc -->
 
-ROS Daemons provide the ability to start certain elements of the ROS ecosystem on boot using the [systemd software suite](https://en.wikipedia.org/wiki/Systemd). This is useful for robots that are required to provide a fixed set of functionality at all times regardless of use-case (e.g., starting up base drivers).
+The QCR ROS Services provides an easily extendable framework to allow certain elements of the ROS ecosystem to run on boot using the [systemd software suite](https://en.wikipedia.org/wiki/Systemd). This is useful for robots that are required to provide a fixed set of functionality at all times regardless of use-case (e.g., starting up base drivers).
 
-- [Daemons](#daemons)
-  - [qcr-env](#qcr-env)
-  - [ros-daemon](#ros-daemon)
-  - [roscore-daemon](#roscore-daemon)
-  - [ros-watchdog](#ros-watchdog)
-  - [robot-bringup-daemon](#robot-bringup-daemon)
-  - [ros-sensors](#ros-sensors)
-  - [ros-robot](#ros-robot)
-  - [ros-project](#ros-project)
-- [Service Dependency Tree](#service-dependency-tree)
+- [QCR-Env](#qcr-env)
+- [QCR-Services](#qcr-services)
+  - [Service Dependency Tree](#service-dependency-tree)
 - [Installation](#installation)
   - [Step 1. Adding QCR Apt Repositories](#step-1-adding-qcr-apt-repositories)
-  - [Step 2. Installing the Daemons](#step-2-installing-the-daemons)
+  - [Step 2. Installing the Packages](#step-2-installing-the-packages)
 - [Usage](#usage)
-  - [Starting/Stopping the Daemons](#startingstopping-the-daemons)
+  - [Creating and Configuring Services](#creating-and-configuring-services)
+  - [Starting/Stopping the Services](#startingstopping-the-services)
   - [Accessing Logs](#accessing-logs)
-  - [Setting up Robot Bringup](#setting-up-robot-bringup)
 - [Usage on a Development Machine](#usage-on-a-development-machine)
 
-## Daemons
-
-This repository is divided into the following five packages:
-
-### qcr-env
+## QCR Env
 
 The qcr-env package installs the ```qcr-env.bash``` file to ```/etc/qcr/```. This file defines system critical information such as the location of the primary ROS workspace, and ROS master location. These variables are utilised by the various services below. For example, the roscore-daemon relies on having the ROS workspace sourced in order to start a roscore.
 
@@ -33,57 +22,20 @@ The qcr-env package installs the ```qcr-env.bash``` file to ```/etc/qcr/```. Thi
 
 *Install*: `sudo apt install ros-noetic-qcr-env` (requires GPG Key to be set, see [below](#installation))
 
-### ros-daemon
+## QCR Services
 
-The ros-daemon package installs the ```ros``` daemon. The ROS daemons is a meta-service that when started brings up the rest of the daemons provided by this repository, and conversely, when stopped will shutdown these same daemons. It should be noted that this package does not execute any ROS software itself.
+The QCR Services package installs 6 systemd services. These are the:
 
-*Install*: `sudo apt install ros-noetic-ros-daemon` (requires GPG Key to be set, see [below](#installation))
+- **ROS Service**: a meta-service that when started brings up the rest of the services provided by this repository, and conversely, when stopped will shutdown these same services (see the dependency tree below). It should be noted that this service does not execute any ROS software itself.
+- **ROS-Core Service**: this service creates a ROS master by executing the ```roscore``` command on startup; using the system variables defined in ```/etc/qcr/qcr-env.bash```.
+- **ROS-Watchdog Service**: this service is responsible for ensuring that the ROS master specified in ```/etc/qcr/qcr-env.bash``` is alive and managing the life-cycle of its dependent services accordingly. In the event that it is unable to contact the ROS master it initiates a restart - causing all dependent services to stop. Until the ROS master is contactable, the ros-watchdog service will remain in an *activating* state, preventing its dependent services from restarting. Once the ROS master becomes contactable again however, the ros-watchdog will transition into an *activated* state, and its dependent services will restart. This service can be located on a different machine to the ROS master, facilitating multi-machine management of services.
+- **ROS-Sensors Service**: a meta-service that when started brings up any dependent services, and conversely, when stopped will shutdown these same services. This meta-service is meant to be used as the dependent service for all sensors that should be launched on boot.
+- **ROS-Robot Service**: a meta-service that when started brings up any dependent services, and conversely, when stopped will shutdown these same services. This meta-service is meant to be used as the dependent service for all components that should be launched on boot required by the robot (e.g., teleoperation node, hardware interface nodes, etc.).
+- **ROS-Project Service**: is a meta-service that when started brings up any dependent services, and conversely, when stopped will shutdown these same services. This meta-service is meant to be used as the dependent service for all components that should be launched on boot for your specific project (e.g., nodes containing research algorithms).
 
-### roscore-daemon
+*Install*: `sudo apt install ros-noetic-qcr-services` (requires GPG Key to be set, see [below](#installation)). Depends on the qcr-env package and hence, the qcr-env package will be installed if it isn't already.
 
-The roscore-daemon package installs the ```roscore``` daemon. This daemons creates a ROS master by executing the ```roscore``` command on startup - using the system variables defined in ```/etc/qcr/qcr-env.bash```.
-
-*Note*: This service is optional and can be omitted on systems which are not intended to act as the ROS master.
-
-*Install*: `sudo apt install ros-noetic-roscore-daemon` (requires GPG Key to be set, see [below](#installation))
-
-### ros-watchdog
-
-The ros-watchdog packages installs the ```ros-watchdog``` daemon. This daemon is responsible for ensuring that the ROS master specified in ```/etc/qcr/qcr-env.bash``` is alive and managing the life-cycle of its dependent services accordingly. 
-
-In the event that it is unable to contact the ROS master it initiates a restart - causing all depedent services to stop. Until the ROS master is contactable, the ros-watchdog daemon will remain in an *activating* state, preventing its dependent services from restarting. Once the ROS master becomes contactable again however, the ros-watchdog will transition into an *activated* state, and its dependent services will restart.
-
-*Note*: This service can be located on a different machine to the ROS master, facilitating multi-machine management of services.
-
-*Install*: `sudo apt install ros-noetic-ros-watchdog` (requires GPG Key to be set, see [below](#installation))
-
-### robot-bringup-daemon
-
-The robot-bringup-daemon package installs the ```robot-bringup``` daemon. This daemon executes the command specified by the ```QCR_ROBOT_LAUNCH``` variable in ```/etc/qcr/env.bash``` - allowing custom commands such as roslaunch to be initiated at boot.
-
-*Note*: this daemon/service is considered legacy and has been superseded by the ros-sensors, ros-robot, and ros-project meta services.
-
-*Install*: `sudo apt install ros-noetic-robot-bringup-daemon` (requires GPG Key to be set, see [below](#installation))
-
-### ros-sensors
-
-The ros-sensors-daemon package installs the ```ros-senors``` daemon. The ROS-Sensors daemons is a meta-service that when started brings up any dependent services, and conversely, when stopped will shutdown these same daemons. This meta-service is meant to be used as the dependent service for all sensors that should be launched on boot.
-
-*Install*: `sudo apt install ros-noetic-ros-sensors` (requires GPG Key to be set, see [below](#installation))
-
-### ros-robot
-
-The ros-robot-daemon package installs the ```ros-robot``` daemon. The ROS-Robot daemons is a meta-service that when started brings up any dependent services, and conversely, when stopped will shutdown these same daemons. This meta-service is meant to be used as the dependent service for all components that should be launched on boot required by the robot (e.g., teleoperation node, hardware interface nodes, etc.).
-
-*Install*: `sudo apt install ros-noetic-ros-robot` (requires GPG Key to be set, see [below](#installation))
-
-### ros-project
-
-The ros-project-daemon package installs the ```ros-project``` daemon. The ROS-Project daemons is a meta-service that when started brings up any dependent services, and conversely, when stopped will shutdown these same daemons. This meta-service is meant to be used as the dependent service for all components that should be launched on boot for your specific project (e.g., nodes containing research algorithms).
-
-*Install*: `sudo apt install ros-noetic-ros-project` (requires GPG Key to be set, see [below](#installation))
-
-## Service Dependency Tree
+### Service Dependency Tree
 
 To allow for multi-machine configurations, and to provide a simplified mechanism for shutting down the complete set of services, we define a dependency tree, (seen in the image below) that facilitates the ability to manage the robot state at varying levels. For instance, by stopping the *ros* service on Machine 1 using the command ```sudo service ros stop``` the *ros-watchdog* and *roscore* services, which depend on the *ros* service will stop which will in turn cause all depedent services to stop.
 
@@ -116,52 +68,45 @@ Update your packages list
 sudo apt update
 ```
 
-### Step 2. Installing the Daemons
+### Step 2. Installing the Packages
 
-Install the roscore-daemon (optional) and robot-bringup-daemon
+Install the qcr-env package via:
 ```
-sudo apt install -y ros-noetic-roscore-daemon ros-noetic-robot-bringup-daemon
+sudo apt install ros-noetic-qcr-env
 ```
 
-*Note*: As part of the installation process, the daemons will automatically startup and register themselves to start on boot.
+Install the qcr-services package via:
+```
+sudo apt install ros-noetic-qcr-services
+```
+
+*Note*: As part of the installation process, the services will automatically startup and register themselves to start on boot.
 
 ## Usage
 
-### Starting/Stopping the Daemons
-Managing the state of the daemons in this package can be accomplished through the use of either the ```service``` or ```systemctl``` commands:
+## Creating and Configuring Services
+To create and configure services we recommend you utilise the [QCR Services Configuration Tool](https://github.com/qcr/services).
+
+### Starting/Stopping the Services
+Managing the state of the services in this package can be accomplished through the use of either the ```service``` or ```systemctl``` commands:
 
 ```sh
-sudo service {{daemon name}} [start|stop|restart|status]
+sudo service {{service name}} [start|stop|restart|status]
 #OR
-sudo systemctl [start|stop|restart|status] {{daemon name}}
+sudo systemctl [start|stop|restart|status] {{service name}}
 ```
 
-Where ```{{daemon name}}``` is the name of the daemon you wish to manage (i.e., ros, roscore, ros-watchdog, robot-bringup).
+Where ```{{service name}}``` is the name of the service you wish to manage (i.e., ros, roscore, ros-watchdog, robot-bringup).
 
 ### Accessing Logs
-Accessing stdout logs from each of the daemons can be accomplished using the ```journalctl``` command:
+Accessing stdout logs from each of the services can be accomplished using the ```journalctl``` command:
 
 ```sh
-journalctl -u {{daemon name}} --follow --lines 500
+journalctl -u {{service name}} --follow --lines 500
 ```
 
-Where ```{{daemon name}}``` is the name of the daemon you wish to manage (i.e., ros, roscore, ros-watchdog, robot-bringup).
+Where ```{{service name}}``` is the name of the service you wish to manage (i.e., ros, roscore, ros-watchdog, robot-bringup).
 
-### Setting up Robot Bringup
-
-*Note*: the Robot Bringup service is considered legacy and has been superseded by the ros-sensors, ros-robot, and ros-project meta services.
-
-The command executed by the ```robot-bringup``` daemon is defined by the ```QCR_ROBOT_LAUNCH``` variable in ```/etc/qcr/qcr-env.bash```. An example of how to use this variable can be seen below:
-
-```
-export QCR_ROBOT_LAUNCH="roslaunch joy_teleop example.launch"
-```
-
-**Important:** The robot-bringup daemon must be restarted after making changes to the ```QCR_ROBOT_LAUNCH``` variable using the command 
-
-```sh
-sudo service robot-bringup restart
-```
 
 ## Usage on a Development Machine
 The ```/etc/qcr/qcr-env.bash``` file installed by the qcr-env package is copied from a template file that is located in the system install lcation for ROS (e.g., /opt/ros/noetic/share/qcr_env/). This file is only copied if ```/etc/qcr/qcr-env.bash``` does not already exists.
