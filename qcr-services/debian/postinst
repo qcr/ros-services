@@ -5,11 +5,11 @@ systemctl daemon-reload
 systemctl enable ros.service
 systemctl start ros.service
 
-systemctl enable ros-watchdog.service
-systemctl start ros-watchdog.service
-
 systemctl enable roscore.service
 systemctl start roscore.service
+
+systemctl enable ros-watchdog.service
+systemctl start ros-watchdog.service
 
 systemctl enable ros-project.service
 systemctl start ros-project.service
