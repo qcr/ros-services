@@ -21,6 +21,11 @@ include_directories(
 ## Install ##
 #############
 
+catkin_install_python(PROGRAMS
+  scripts/ros-watchdog
+  DESTINATION /usr/bin
+)
+
 install(FILES
   etc/ros.service
   etc/ros-watchdog.service
