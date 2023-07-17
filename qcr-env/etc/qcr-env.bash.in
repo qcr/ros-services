@@ -8,6 +8,10 @@ export QCR_ROBOT_CONF_PATH="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /d
 export QCR_ROBOT_TYPE=
 # Sets this robot to be a ROS MASTER (true) or a USER PC (false)
 export QCR_IS_MASTER=true
+# Set the ROS IP of the master, required on both master and slave devices
+export QCR_ROS_IP_MASTER=
+# Set the ROS IP of a slave, only required on slave devices
+export QCR_ROS_IP_SLAVE=
 # Sets the ROS version (1 or 2). Defaults to 1
 export QCR_ROS_VERSION=1
 
@@ -28,30 +32,37 @@ else
     export QCR_ROS_DISTRO=noetic
 fi
 
-if $QCR_IS_MASTER; then
-    export ROS_MASTER_URI=http://$(hostname):11311
+export ROS_MASTER_URI=http://${QCR_ROS_IP_MASTER}:11311
+if [ $QCR_IS_MASTER == true ]; then
+    if [ -z $QCR_ROS_IP_MASTER ]; then
+        export ROS_HOSTNAME=$QCR_ROS_IP_MASTER
+        export ROS_IP=$QCR_ROS_IP_MASTER
+    fi
 else
-    export ROS_MASTER_URI=http://user-pc:11311
+    if [ -z $QCR_ROS_IP_SLAVE ]; then
+        export ROS_HOSTNAME=$QCR_ROS_IP_SLAVE
+        export ROS_IP=$QCR_ROS_IP_SLAVE
+    fi
 fi
 
 # Sets the default location from which to source ROS packages
 export ROS_WORKSPACE=/opt/ros/$QCR_ROS_DISTRO/setup.bash
 
-# [TESTING - No Functionality Yet] 
-# Specify sensor or robot specific workspace into ROS_BASE_WORKSPACE
-export ROS_BASE_WORKSPACE=
-# Specify user specific (non-robot centric) workspace (i.e., automation) into ROS_USER_WORKSPACE
-export ROS_USER_WORKSPACE=
+# # [TESTING - No Functionality Yet] 
+# # Specify sensor or robot specific workspace into ROS_BASE_WORKSPACE
+# export ROS_BASE_WORKSPACE=
+# # Specify user specific (non-robot centric) workspace (i.e., automation) into ROS_USER_WORKSPACE
+# export ROS_USER_WORKSPACE=
 
-# --------- Bringup Related --------------
-# The command to run before bringing up the robot service
-export QCR_ROBOT_PRELAUNCH=
+# # --------- Bringup Related --------------
+# # The command to run before bringing up the robot service
+# export QCR_ROBOT_PRELAUNCH=
 
-# The command that used by the bringup service to launch the robot stack
-export QCR_ROBOT_LAUNCH=
+# # The command that used by the bringup service to launch the robot stack
+# export QCR_ROBOT_LAUNCH=
 
-# The command to run when the bringup service exits
-export QCR_ROBOT_POSTEXIT=
+# # The command to run when the bringup service exits
+# export QCR_ROBOT_POSTEXIT=
 
 # --------- System Related -----------
 export NETWORK_CONFIG_DIR=/etc/systemd/network

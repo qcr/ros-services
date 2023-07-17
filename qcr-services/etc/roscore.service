@@ -4,7 +4,7 @@ Requires=ros.service
 After=ros.service
 
 [Service]
-ExecStart=/bin/bash -c "source /etc/qcr/qcr-env.bash && source $ROS_WORKSPACE && roscore"
+ExecStart=/bin/bash -c "source /etc/qcr/qcr-env.bash && source $ROS_WORKSPACE && [ $QCR_IS_MASTER == true ] && roscore || exit 0"
 Restart=always
 RestartSec=5
 
