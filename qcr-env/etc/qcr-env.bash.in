@@ -32,7 +32,10 @@ else
     export QCR_ROS_DISTRO=noetic
 fi
 
-export ROS_MASTER_URI=http://${QCR_ROS_IP_MASTER}:11311
+if [ -z $QCR_ROS_IP_MASTER ]; then
+    export ROS_MASTER_URI=http://${QCR_ROS_IP_MASTER}:11311
+fi
+
 if [ $QCR_IS_MASTER == true ]; then
     if [ -z $QCR_ROS_IP_MASTER ]; then
         export ROS_HOSTNAME=$QCR_ROS_IP_MASTER
