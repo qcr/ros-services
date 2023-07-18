@@ -5,7 +5,7 @@ After=ros.service
 
 [Service]
 ExecStart=/bin/bash -c "source /etc/qcr/qcr-env.bash && source $ROS_WORKSPACE && [ $QCR_IS_PRIMARY == true ] && roscore || exit 0"
-Restart=always
+Restart=on-failure
 RestartSec=5
 
 [Install]
