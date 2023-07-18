@@ -32,17 +32,17 @@ else
     export QCR_ROS_DISTRO=noetic
 fi
 
-if [ -z $QCR_ROS_IP_PRIMARY ]; then
+if [ ! -z $QCR_ROS_IP_PRIMARY ]; then
     export ROS_MASTER_URI=http://${QCR_ROS_IP_PRIMARY}:11311
 fi
 
 if [ $QCR_IS_PRIMARY == true ]; then
-    if [ -z $QCR_ROS_IP_PRIMARY ]; then
+    if [ ! -z $QCR_ROS_IP_PRIMARY ]; then
         export ROS_HOSTNAME=$QCR_ROS_IP_PRIMARY
         export ROS_IP=$QCR_ROS_IP_PRIMARY
     fi
 else
-    if [ -z $QCR_ROS_IP_PERIPHERAL ]; then
+    if [ ! -z $QCR_ROS_IP_PERIPHERAL ]; then
         export ROS_HOSTNAME=$QCR_ROS_IP_PERIPHERAL
         export ROS_IP=$QCR_ROS_IP_PERIPHERAL
     fi
