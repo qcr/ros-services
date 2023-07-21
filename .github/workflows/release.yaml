@@ -20,10 +20,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - ros-distro: melodic
-            arch: amd64
-          - ros-distro: melodic
-            arch: arm64
           - ros-distro: noetic
             arch: amd64
           - ros-distro: noetic
