@@ -34,6 +34,8 @@ fi
 
 if [ ! -z $QCR_ROS_IP_PRIMARY ]; then
     export ROS_MASTER_URI=http://${QCR_ROS_IP_PRIMARY}:11311
+else
+    export ROS_MASTER_URI=http://$(hostname):11311
 fi
 
 if [ $QCR_IS_PRIMARY == true ]; then
