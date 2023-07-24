@@ -22,6 +22,22 @@ The qcr-env package installs the ```qcr-env.bash``` file to ```/etc/qcr/```. Thi
 
 *Install*: `sudo apt install ros-noetic-qcr-env` (requires GPG Key to be set, see [below](#installation))
 
+### ROS Primary & Peripheral
+
+The QCR Environment bash script makes configuring ROS Primary (Master) / Periperhal (Slave) systems easy. First, ensure both devices are on the same network.
+
+To configure a machine as the primary:
+1. Open `/etc/qcr/qcr-env.bash` in an editor.
+2. Ensure `QCR_IS_PRIMARY` is set to true (i.e., `QCR_IS_PRIMARY=true`).
+3. Set `QCR_ROS_IP_PRIMARY` to the Primary's IP address.
+
+To configure a peripheral machine:
+1. Open `/etc/qcr/qcr-env.bash` in an editor.
+2. Ensure `QCR_IS_PRIMARY` is set to false (i.e., `QCR_IS_PRIMARY=false`).
+3. Set `QCR_ROS_IP_PRIMARY` to the Primary's IP address.
+4. Set `QCR_ROS_IP_PERIPHERAL` to the Peripheral's IP address.
+5. Restart the ROS service by running `sudo systemctl restart ros.service`
+
 ## QCR Services
 
 The QCR Services package installs 6 systemd services. These are the:
